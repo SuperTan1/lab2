@@ -93,7 +93,7 @@ public class PriorityQueue<E> {
 	// Sifts a node down.
 	// siftDown(index) fixes the invariant if the element at 'index' may
 	// be greater than its children, but all other elements are correct.
-	private void siftDown(int index) {
+	private void siftDown(int index) {//s
 		E value = heap.get(index);
 		
 		// Stop when the node is a leaf.

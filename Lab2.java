@@ -9,7 +9,7 @@ public class Lab2 {
 		// TODO: declaration of two priority queues
 
 		StringBuilder sb = new StringBuilder();
-
+//s
 
 
 		for(int line_no=0;line_no<commands.length;line_no++){
