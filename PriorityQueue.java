@@ -135,7 +135,7 @@ public class PriorityQueue<E> {
 	public final int rightChild(int index) {
 		return 2*index+2;
 	}
-
+	//s
 	public final int parent(int index) {
 		return (index-1)/2;
 	}
