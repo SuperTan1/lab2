@@ -10,7 +10,7 @@ public class BidComparator {
         return Integer.compare(bid2.getPrice(), bid1.getPrice());
     }
 }
-    //s
+
     public static class SellComparator implements Comparator<Bid> {
  // ökning 1,2,3,4 minsta till hösta
     @Override
