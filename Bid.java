@@ -44,7 +44,6 @@ public class Bid {
 		} else
 			return "invalid bid type";
 	}
-//s
 	public int getPrice() {
 		return this.Price;
 	}
