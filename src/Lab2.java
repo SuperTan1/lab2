@@ -11,51 +11,59 @@ public class Lab2 {
 		PriorityQueue<Bid> buy_pq = new PriorityQueue<>(new BidComparator.BuyComparator());
 		PriorityQueue<Bid> sell_pq = new PriorityQueue<>(new BidComparator.SellComparator());
 
-		for(int line_no=0;line_no<commands.length;line_no++){
+		for (int line_no = 0; line_no < commands.length; line_no++) {
 			String line = commands[line_no];
-			if( line.equals("") )continue;
+			if (line.equals("")) continue;
 
 			String[] parts = line.split("\\s+");
-			if( parts.length != 3 && parts.length != 4)
+			if (parts.length != 3 && parts.length != 4)
 				throw new RuntimeException("line " + line_no + ": " + parts.length + " words");
 			String name = parts[0];
-			if( name.charAt(0) == '\0' )
+			if (name.charAt(0) == '\0')
 				throw new RuntimeException("line " + line_no + ": invalid name");
 			String action = parts[1];
 			int price;
 			try {
 				price = Integer.parseInt(parts[2]);
-			} catch(NumberFormatException e){
+			} catch (NumberFormatException e) {
 				throw new RuntimeException(
 						"line " + line_no + ": invalid price");
 			}
 
-			if( action.equals("K") ) {
-			buy_pq.add(new Bid(name, "K", price));
-			} else if( action.equals("S") ) {
-				sell_pq.add(new Bid(name, "S", price));
-			} else if( action.equals("NK") ){
+			if (action.equals("K")) {
+				buy_pq.add(new Bid(name, price));
+			} else if (action.equals("S")) {
+				sell_pq.add(new Bid(name, price));
+			} else if (action.equals("NK")) {
 				// TODO: update existing buy bid. use parts[3].
-
-
-			} else if( action.equals("NS") ){
+				int newPrice = Integer.parseInt(parts[3]);
+				Bid oldBid = new Bid(name, price);
+				Bid newBid = new Bid(name, newPrice);
+                buy_pq.update(oldBid,newBid);
+			} else if (action.equals("NS")) {
 				// TODO: update existing sell bid. use parts[3].
+				int newPrice = Integer.parseInt(parts[3]);
+				Bid oldBid = new Bid(name, price);
+				Bid newBid = new Bid(name, newPrice);
+				sell_pq.update(oldBid,newBid);
 			} else {
 				throw new RuntimeException(
 						"line " + line_no + ": invalid action");
 			}
 
-			if( sell_pq.size() == 0 || buy_pq.size() == 0 )continue;
+			if (sell_pq.size() == 0 || buy_pq.size() == 0) continue;
+			while(sell_pq.size() != 0 && buy_pq.size() != 0) {
+				Bid sellPriority = sell_pq.minimum();
+				Bid buyPriority = buy_pq.minimum();
 
-			Bid sellPriority = sell_pq.peek();
-			Bid buyPriority = buy_pq.peek();
-
-			if(sellPriority.Price <= buyPriority.Price) {
-				sell_pq.deleteMinimum();
-				buy_pq.deleteMinimum();
+				if (sellPriority.Price <= buyPriority.Price) {
+					sb.append("Transaction: " + buyPriority.name + " buys a share from "
+							+ sellPriority.name + " for " + sellPriority.Price + "kr" + "\n");
+					sell_pq.deleteMinimum();
+					buy_pq.deleteMinimum();
+				}else break;
 			}
 
-			sb.append("Transaction: " + buyPriority.name + " buys a share from " + sellPriority.name + "for " + sellPriority.Price);
 			// TODO:
 			// compare the bids of highest priority from each of
 			// each priority queues.
@@ -72,20 +80,28 @@ public class Lab2 {
 		sb.append("Sellers: ");
 		// TODO: print remaining sellers.
 		//       can remove from priority queue until it is empty.
-		for (int i = 0; i < sell_pq.size(); i++) {
-			sb.append(sell_pq.getHeap().get(i));
+		while (sell_pq.size() != 0) {
+			if (sell_pq.size() > 1) {
+				sb.append(sell_pq.minimum()).append(", ");
+			} else {
+				sb.append(sell_pq.minimum());
+			}
+			sell_pq.deleteMinimum();
 		}
 
-		sb.append("Buyers: ");
+		sb.append("\nBuyers: ");
 		// TODO: print remaining buyers
 		//       can remove from priority queue until it is empty.
-		for (int i = 0; i < sell_pq.size(); i++) {
-			sb.append(buy_pq.getHeap().get(i));
+		while (buy_pq.size() != 0) {
+			if (buy_pq.size() > 1) {
+				sb.append(buy_pq.minimum()).append(", ");
+			} else {
+				sb.append(buy_pq.minimum());
+			}
+			buy_pq.deleteMinimum();
 		}
-
 		return sb.toString();
 	}
-
 	public static void main(String[] args) throws IOException {
 		final BufferedReader actions;
 		if( args.length != 1 ){

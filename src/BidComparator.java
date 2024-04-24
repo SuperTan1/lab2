@@ -15,6 +15,7 @@ public class BidComparator {
  // ökning 1,2,3,4 minsta till hösta
     @Override
     public int compare(Bid bid1, Bid bid2) {
+
         return Integer.compare(bid1.getPrice(), bid2.getPrice());
     }
 }

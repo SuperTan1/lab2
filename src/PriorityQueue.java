@@ -42,16 +42,6 @@ public class PriorityQueue<E> {
 		heap.remove(heap.size()-1);
 		if (heap.size() > 0) siftDown(0);
 	}
-// tror jag har implementerat denna fel
-	public void deleteMaximum(){
-		if (size() == 0)
-			throw new NoSuchElementException();
-
-		heap.set(0, heap.get(heap.size()-1));
-		heap.remove(heap.size()-1);
-		if (heap.size() > 0) siftUp(0);
-
-	}
 
 	public void update(E oldBid, E newBid) {
 		int index = heap.indexOf(oldBid);
@@ -81,7 +71,7 @@ public class PriorityQueue<E> {
 			int parentIndex = parent(index);
 			E valueParent = heap.get(parentIndex);
 
-			if (comparator.compare(value, valueParent) > 0) {
+			if (comparator.compare(value, valueParent) < 0) {
 				heap.set(index, valueParent);
 				index = parentIndex;
 			}
