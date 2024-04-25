@@ -52,6 +52,7 @@ public class Lab2 {
 			}
 
 			if (sell_pq.size() == 0 || buy_pq.size() == 0) continue;
+
 			while(sell_pq.size() != 0 && buy_pq.size() != 0) {
 				Bid sellPriority = sell_pq.minimum();
 				Bid buyPriority = buy_pq.minimum();

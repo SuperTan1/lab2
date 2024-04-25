@@ -4,10 +4,12 @@ import java.util.*;
 public class PriorityQueue<E> {
 	private ArrayList<E> heap = new ArrayList<E>();
 	private Comparator<E> comparator;
+	private Map<E, Integer> hashMap = new HashMap<>();
 
 	public PriorityQueue(Comparator<E> comparator) {
 		this.comparator = comparator;
 	}
+
 
 	// Returns the size of the priority queue.
 	public int size() {
@@ -17,10 +19,8 @@ public class PriorityQueue<E> {
 	// Adds an item to the priority queue.
 	public void add(E x) {
 		heap.add(x);
-		if(heap.size() > 1) {
-			siftUp(heap.size() -1);
-		}
-
+		hashMap.put(x, heap.size() - 1);
+			siftUp(heap.size() - 1);
 	}
 
 	// Returns the smallest item in the priority queue.
@@ -31,36 +31,35 @@ public class PriorityQueue<E> {
 
 		return heap.get(0);
 	}
-	public ArrayList<E> getHeap() {return heap;}
+
 	// Removes the smallest item in the priority queue.
 	// Throws NoSuchElementException if empty.
 	public void deleteMinimum() {
 		if (size() == 0)
 			throw new NoSuchElementException();
-
-		heap.set(0, heap.get(heap.size()-1));
-		heap.remove(heap.size()-1);
-		if (heap.size() > 0) siftDown(0);
+		E last = heap.remove(heap.size() -1 );
+	if(heap.size() > 0) {
+		heap.set(0, last);
+		hashMap.put(last, 0);
+		siftDown(0);
+	}
 	}
 
 	public void update(E oldBid, E newBid) {
-		int index = heap.indexOf(oldBid);
-		if(index == -1) {
+		int index = hashMap.get(oldBid); // index av gamla bid
+		if(index == -1) { // finns inte med i heapen, returnera inget
 			return;
 		}
-		heap.set(index,newBid);
+		heap.set(index,newBid); // sätter nya bidet till indexet
+		hashMap.remove(oldBid); // ta bort gamla bidet
+		hashMap.put(newBid, index); // lägger nya bidet i indexet
 
-		if (comparator.compare(newBid, oldBid) > 0) { // newBid har högre prioritet
-			siftUp(index);
-		} else {
+		if (comparator.compare(newBid, oldBid) > 0) {
 			siftDown(index);
+		} else {
+			siftUp(index);
 		}
 	}
-
-	public E peek() {
-		return heap.get(0);
-	}
-
 	// Sifts a node up.
 	// siftUp(index) fixes the invariant if the element at 'index' may
 	// be less than its parent, but all other elements are correct.
@@ -73,11 +72,15 @@ public class PriorityQueue<E> {
 
 			if (comparator.compare(value, valueParent) < 0) {
 				heap.set(index, valueParent);
+				hashMap.put(valueParent, index);
 				index = parentIndex;
 			}
-			else break;
+			else {
+				break;
+		}
 		}
 		heap.set(index, value);
+		hashMap.put(value, index);
 	}
      
 	// Sifts a node down.
@@ -110,11 +113,13 @@ public class PriorityQueue<E> {
 			// carry on downwards.
 			if (comparator.compare(value, childValue) > 0) {
 				heap.set(index, childValue);
+				hashMap.put(childValue, index);
 				index = child;
 			} else break;
 		}
 
 		heap.set(index, value);
+		hashMap.put(value, index);
 	}
 
 	// Helper functions for calculating the children and parent of an index.
